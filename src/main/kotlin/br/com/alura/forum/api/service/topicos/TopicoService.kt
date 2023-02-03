@@ -20,7 +20,6 @@ class TopicoService(
     private val viewMapper: TopicoViewMapper,
     private val notFoundMessage: String = "Topico Não Encontrado"
 ) {
-
     fun listar(nomeCurso: String?, page: Pageable): Page<TopicoView> {
         var topicos = if (nomeCurso == null) {
             repository.findAll(page)

@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletRequest
 @RestControllerAdvice
 class ExceptionHandler {
 
-    @ExceptionHandler(br.com.alura.forum.api.exceptions.NotFoundException::class)
+    @ExceptionHandler(NotFoundException::class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    fun handlerNotFound(exception: br.com.alura.forum.api.exceptions.NotFoundException, request: HttpServletRequest): ErrorView {
+    fun handlerNotFound(exception: NotFoundException, request: HttpServletRequest): ErrorView {
         return ErrorView(
             status = HttpStatus.NOT_FOUND.value(),
             error = HttpStatus.NOT_FOUND.name,
@@ -27,7 +27,7 @@ class ExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun handlerValidationError(exception: MethodArgumentNotValidException, request: HttpServletRequest): ErrorView {
         val erroMensagem: HashMap<String, String?> = hashMapOf()
-        exception.bindingResult.fieldErrors.forEach { e -> erroMensagem.put(e.field, e.defaultMessage) }
+        exception.bindingResult.fieldErrors.forEach { e -> erroMensagem[e.field] = e.defaultMessage }
 
         return ErrorView(
             status = HttpStatus.BAD_REQUEST.value(),

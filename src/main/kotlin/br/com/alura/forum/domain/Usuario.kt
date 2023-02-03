@@ -9,5 +9,6 @@ import javax.persistence.Id
 data class Usuario(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) val id: Int? = null,
     val email: String = "",
-    val nome: String = ""
+    val nome: String = "",
+    val password: String = ""
 )
