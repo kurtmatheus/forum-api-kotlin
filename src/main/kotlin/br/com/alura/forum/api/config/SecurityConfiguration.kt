@@ -1,34 +1,38 @@
 package br.com.alura.forum.api.config
 
-import br.com.alura.forum.api.repository.usuario.UsuarioRepository
-import br.com.alura.forum.api.service.usuario.UsuarioService
+import br.com.alura.forum.security.JWTAuthenticationFilter
+import br.com.alura.forum.security.JWTLoginFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.Customizer
-import org.springframework.security.config.Customizer.*
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfiguration (
-    private val userDetailsService: UsuarioService
+class SecurityConfiguration(
+    private val configuration: AuthenticationConfiguration,
+    private val jwtUtil: JWTUtil
 ) {
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http?.authorizeRequests()?.anyRequest()?.authenticated()?.and()?.sessionManagement()
-            ?.sessionCreationPolicy(SessionCreationPolicy.STATELESS)?.and()?.formLogin()?.disable()
-            ?.httpBasic(withDefaults())
-            ?.userDetailsService(userDetailsService)
+        http?.csrf()?.disable()
+            ?.authorizeRequests()
+            ?.antMatchers("/login")?.permitAll()
+            ?.antMatchers("/topicos")?.hasAuthority("LEITURA-ESCRITA")
+            ?.anyRequest()
+            ?.authenticated()?.and()
+
+        http?.addFilterBefore(JWTLoginFilter(configuration.authenticationManager, jwtUtil), UsernamePasswordAuthenticationFilter::class.java)
+        http?.addFilterBefore(JWTAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter::class.java)
+        http?.sessionManagement()?.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         return http.build()
     }
@@ -37,11 +41,4 @@ class SecurityConfiguration (
     fun encoder(): PasswordEncoder? {
         return BCryptPasswordEncoder()
     }
-
-    @Bean
-    @Throws(Exception::class)
-    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager? {
-        return authConfig.authenticationManager
-    }
-
 }
