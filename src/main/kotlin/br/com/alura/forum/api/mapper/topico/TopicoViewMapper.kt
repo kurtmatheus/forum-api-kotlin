@@ -16,7 +16,8 @@ class TopicoViewMapper : Mapper<Topico, TopicoView> {
             curso = CursoView(nome = t.curso.nome, categoria = t.curso.categoria),
             autor = UsuarioView(nome = t.autor.nome, email = t.autor.email),
             status = t.status.toString(),
-            dataCriacao = t.dataCriacao
+            dataCriacao = t.dataCriacao,
+            dataAlteracao = t.dataAlteracao
         )
     }
 

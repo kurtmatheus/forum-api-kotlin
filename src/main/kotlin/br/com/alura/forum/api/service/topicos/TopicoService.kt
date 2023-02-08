@@ -7,25 +7,25 @@ import br.com.alura.forum.api.mapper.topico.TopicoFormMapper
 import br.com.alura.forum.api.mapper.topico.TopicoViewMapper
 import br.com.alura.forum.api.repository.topico.TopicoRepository
 import br.com.alura.forum.api.view.topico.TopicoView
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
+import java.time.LocalDateTime
 
 @Service
 class TopicoService(
     private val repository: TopicoRepository,
-    private val formMapper: TopicoFormMapper,
     private val viewMapper: TopicoViewMapper,
+    private val formMapper: TopicoFormMapper,
     private val notFoundMessage: String = "Topico Não Encontrado"
 ) {
+    @Cacheable(cacheNames = ["topicos"], key = "#root.method.name")
     fun listar(nomeCurso: String?, page: Pageable): Page<TopicoView> {
-        var topicos = if (nomeCurso == null) {
-            repository.findAll(page)
-        } else {
-            repository.findByCursoNome(nomeCurso, page)
-        }
+        val topicos = nomeCurso?.let { repository.findByCursoNome(nomeCurso, page) } ?: repository.findAll(page)
         return topicos.map { t -> viewMapper.map(t) }
     }
 
@@ -34,19 +34,23 @@ class TopicoService(
         return viewMapper.map(topico)
     }
 
+    @CacheEvict(cacheNames = ["topicos"], allEntries = true)
     fun cadastrar(form: TopicoForm, uriBuilder: UriComponentsBuilder): ResponseEntity<TopicoView> {
         val topico = repository.save(formMapper.map(form))
         val uri = uriBuilder.path("/topicos/${topico.id}").build().toUri()
         return ResponseEntity.created(uri).body(viewMapper.map(topico))
     }
 
+    @CacheEvict(cacheNames = ["topicos"], allEntries = true)
     fun atualizar(form: AtualizarTopicoForm, id: Int): ResponseEntity<TopicoView> {
-        var topico = repository.findById(id).orElseThrow{NotFoundException(notFoundMessage)}
+        val topico = repository.findById(id).orElseThrow{NotFoundException(notFoundMessage)}
         topico.titulo = form.titulo
         topico.mensagem = form.mensagem
+        topico.dataAlteracao = LocalDateTime.now()
         return ResponseEntity.ok(viewMapper.map(topico))
     }
 
+    @CacheEvict(cacheNames = ["topicos"], allEntries = true)
     fun deletar(id: Int) {
         val topico = repository.findById(id).orElseThrow{NotFoundException(notFoundMessage)}
         repository.delete(topico)

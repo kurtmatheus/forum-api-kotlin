@@ -27,6 +27,8 @@ class SecurityConfiguration(
             ?.authorizeRequests()
             ?.antMatchers("/login")?.permitAll()
             ?.antMatchers("/topicos")?.hasAuthority("LEITURA-ESCRITA")
+            ?.antMatchers("/swagger-ui/*")?.permitAll()
+            ?.antMatchers("/v3/api-docs/**")?.permitAll()
             ?.anyRequest()
             ?.authenticated()?.and()
 
