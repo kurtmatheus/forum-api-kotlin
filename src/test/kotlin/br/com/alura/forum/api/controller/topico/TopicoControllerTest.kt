@@ -58,9 +58,9 @@ class TopicoControllerTest {
 
         val TOPICO = Topico(titulo = "Como Mockar em Kotlin?", mensagem = "Como faço pra mockar dados em Kotlin?", curso = CURSO, autor = AUTOR)
 
-        em.persistFlushFind(AUTOR)
-        em.persistFlushFind(CURSO)
-        topico = em.persistFlushFind(TOPICO)
+        em.persist(AUTOR)
+        em.persist(CURSO)
+        topico = em.persist(TOPICO)
     }
 
     @Test
