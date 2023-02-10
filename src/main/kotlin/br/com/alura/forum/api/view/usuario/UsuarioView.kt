@@ -6,3 +6,4 @@ data class UsuarioView(
     val nome: String,
     val email: String
 ) : Serializable
+

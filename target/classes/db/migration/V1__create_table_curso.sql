@@ -5,4 +5,4 @@ create table curso(
     primary key (id)
 );
 
-insert into curso(id, nome, categoria) values (1, 'Kotlin/Spring', 'Programacao');
+insert into curso(nome, categoria) values ('Kotlin/Spring', 'Programacao');

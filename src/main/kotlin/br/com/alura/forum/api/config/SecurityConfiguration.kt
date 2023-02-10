@@ -23,18 +23,20 @@ class SecurityConfiguration(
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http?.csrf()?.disable()
-            ?.authorizeRequests()
+        http?.authorizeRequests()
             ?.antMatchers("/login")?.permitAll()
-            ?.antMatchers("/topicos")?.hasAuthority("LEITURA-ESCRITA")
             ?.antMatchers("/swagger-ui/*")?.permitAll()
             ?.antMatchers("/v3/api-docs/**")?.permitAll()
+            ?.antMatchers("/topicos")?.hasAuthority("LEITURA-ESCRITA")
+            ?.antMatchers("/respostas")?.hasAuthority("LEITURA-ESCRITA")
+            ?.antMatchers("/relatorios/*")?.hasAuthority("ADMIN")
             ?.anyRequest()
-            ?.authenticated()?.and()
-
-        http?.addFilterBefore(JWTLoginFilter(configuration.authenticationManager, jwtUtil), UsernamePasswordAuthenticationFilter::class.java)
-        http?.addFilterBefore(JWTAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter::class.java)
-        http?.sessionManagement()?.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            ?.authenticated()
+            ?.and()
+            ?.csrf()?.disable()
+            ?.addFilterBefore(JWTLoginFilter(configuration.authenticationManager, jwtUtil), UsernamePasswordAuthenticationFilter::class.java)
+            ?.addFilterBefore(JWTAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter::class.java)
+            ?.sessionManagement()?.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         return http.build()
     }

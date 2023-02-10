@@ -6,7 +6,9 @@ import br.com.alura.forum.api.form.topico.TopicoForm
 import br.com.alura.forum.api.mapper.topico.TopicoFormMapper
 import br.com.alura.forum.api.mapper.topico.TopicoViewMapper
 import br.com.alura.forum.api.repository.topico.TopicoRepository
+import br.com.alura.forum.api.view.topico.TopicoPorCategoriaView
 import br.com.alura.forum.api.view.topico.TopicoView
+import br.com.alura.forum.domain.Topico
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
@@ -30,7 +32,7 @@ class TopicoService(
     }
 
     fun buscarPorId(id: Int): TopicoView {
-        val topico = repository.findById(id).orElseThrow{NotFoundException(notFoundMessage)}
+        val topico = repository.findById(id).orElseThrow { NotFoundException(notFoundMessage) }
         return viewMapper.map(topico)
     }
 
@@ -43,7 +45,7 @@ class TopicoService(
 
     @CacheEvict(cacheNames = ["topicos"], allEntries = true)
     fun atualizar(form: AtualizarTopicoForm, id: Int): ResponseEntity<TopicoView> {
-        val topico = repository.findById(id).orElseThrow{NotFoundException(notFoundMessage)}
+        val topico = repository.findById(id).orElseThrow { NotFoundException(notFoundMessage) }
         topico.titulo = form.titulo
         topico.mensagem = form.mensagem
         topico.dataAlteracao = LocalDateTime.now()
@@ -52,7 +54,12 @@ class TopicoService(
 
     @CacheEvict(cacheNames = ["topicos"], allEntries = true)
     fun deletar(id: Int) {
-        val topico = repository.findById(id).orElseThrow{NotFoundException(notFoundMessage)}
+        val topico = repository.findById(id).orElseThrow { NotFoundException(notFoundMessage) }
         repository.delete(topico)
     }
+
+    fun buscarTopico(id: Int): Topico = repository.findById(id).orElseThrow { NotFoundException(notFoundMessage) }
+
+    fun relatorioTopicoPorCategoria(): List<TopicoPorCategoriaView> = repository.relatorioTopicoByCursoCategoria()
+
 }

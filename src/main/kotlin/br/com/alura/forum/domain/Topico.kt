@@ -13,6 +13,6 @@ data class Topico(
     @ManyToOne val curso: Curso = Curso(),
     @ManyToOne val autor: Usuario = Usuario(),
     @Enumerated(value = EnumType.STRING) val status: StatusTopico = StatusTopico.NAO_RESPONDIDO,
-    @JsonIgnore @OneToMany(mappedBy = "topico") val respostas: List<Resposta> = ArrayList(),
+    @JsonIgnore @OneToMany(mappedBy = "topico") var respostas: List<Resposta> = ArrayList(),
     var dataAlteracao: LocalDateTime? = null
 )
