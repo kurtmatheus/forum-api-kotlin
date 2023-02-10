@@ -37,6 +37,10 @@ class TopicoControllerTest {
 
     private var jwt: String? = null
 
+    private val AUTOR = Usuario(nome = "Kurt Matheus", email = "kurt@email.com", password = "\$2a\$12\$T8XE/cYac/HkD77X2YP46eFvYxQ6YnqAlZyZ9W4NBnHbFSxt.Bqz2")
+    private val CURSO = Curso(nome = "Kotlin/Spring", categoria = "Programação")
+    private val TOPICO = Topico(titulo = "Como Mockar em Kotlin?", mensagem = "Como faço pra mockar dados em Kotlin?", curso = CURSO, autor = AUTOR)
+
     private lateinit var topico: Topico
 
     companion object {
@@ -52,14 +56,8 @@ class TopicoControllerTest {
 
         jwt = generateToken()
 
-        val AUTOR = Usuario(nome = "Kurt Matheus", email = "kurt@email.com", password = "\$2a\$12\$T8XE/cYac/HkD77X2YP46eFvYxQ6YnqAlZyZ9W4NBnHbFSxt.Bqz2")
-
-        val CURSO = Curso(nome = "Kotlin/Spring", categoria = "Programação")
-
-        val TOPICO = Topico(titulo = "Como Mockar em Kotlin?", mensagem = "Como faço pra mockar dados em Kotlin?", curso = CURSO, autor = AUTOR)
-
-        em.persist(AUTOR)
         em.persist(CURSO)
+        em.persist(AUTOR)
         topico = em.persist(TOPICO)
     }
 
