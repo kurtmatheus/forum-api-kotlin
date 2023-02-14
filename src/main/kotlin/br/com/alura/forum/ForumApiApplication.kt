@@ -6,8 +6,8 @@ import org.springframework.cache.annotation.EnableCaching
 
 @SpringBootApplication
 @EnableCaching
-class NavegapiApplication
+class ForumApiApplication
 
 fun main(args: Array<String>) {
-	runApplication<br.com.alura.forum.NavegapiApplication>(*args)
+	runApplication<ForumApiApplication>(*args)
 }
